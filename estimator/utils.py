@@ -6,6 +6,7 @@ from PIL import Image
 
 
 
+
 def draw_pose(pred_model, testLoader, n_images, device):
     img_name, img, target = next(iter(testLoader))
     pred_model.eval()
@@ -47,15 +48,7 @@ def generate_maps(points, height, width, g_model, device):
     points_map = g_model(points_map)
     return points_map
 
-def match_format(dic):
-    loc = dic['loc_k'][:,:,0,:]
-    joint_2d = np.zeros((np.shape(loc)[0], 2, 14))
-    for i in range(np.shape(loc)[0]):
-        for j in range(14):
-            joint_2d[i][0][j] = loc[i][j][0]
-            joint_2d[i][1][j] = loc[i][j][1]
 
-    return joint_2d
 
 
 class Heatmaps_to_Joints:
@@ -69,7 +62,7 @@ class Heatmaps_to_Joints:
         heatmap = heatmap * maxm
         return heatmap
 
-    def calc(self, heatmap):
+    def joint_calc(self, heatmap):
         with torch.no_grad():
             heatmap = torch.autograd.Variable(torch.Tensor(heatmap))
 
@@ -81,15 +74,19 @@ class Heatmaps_to_Joints:
         x = ind % w
         y = (ind // w).long()
         ind_k = torch.stack((x, y), dim=3)
-        answer = {'loc_k': ind_k, 'val_k': val_k}
 
-        return {key:answer[key].cpu().data.numpy() for key in answer}
-
-    def search(self, heatmap):
-        result = self.calc(heatmap)
-        joint_2d = match_format(result)
+        location = ind_k[:,:,0,:]
+        joint_2d = np.zeros((np.shape(location)[0], 2, 14))
+        for i in range(np.shape(location)[0]):
+            for j in range(14):
+                joint_2d[i][0][j] = location[i][j][0]
+                joint_2d[i][1][j] = location[i][j][1]
 
         return joint_2d
+
+
+    def search(self, heatmap):
+        return self.joint_calc(heatmap)
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)

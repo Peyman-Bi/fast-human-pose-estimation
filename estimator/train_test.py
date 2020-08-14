@@ -31,7 +31,7 @@ def train(model, g_model, criterion, optimizer, train_loader, valid_loader,
               break
 
             tr_data = tr_data.to(device)
-            tr_labels_hm = generate_maps(tr_labels, 256, 256, g_model, device).to(device)
+            tr_labels_hm = generate_maps(tr_labels, tr_data.size(-2), tr_data.size(-1), g_model, device).to(device)
 
 
             optimizer.zero_grad()
@@ -66,7 +66,7 @@ def train(model, g_model, criterion, optimizer, train_loader, valid_loader,
                     break
 
                 val_data = val_data.to(device)
-                val_labels_hm = generate_maps(val_labels, 256, 256, g_model, device).to(device)
+                val_labels_hm = generate_maps(val_labels, val_data.size(-2), val_data.size(-1), g_model, device).to(device)
 
                 # val_output, fianl_pred_heatmaps = model(val_data)
                 val_output = model(val_data)

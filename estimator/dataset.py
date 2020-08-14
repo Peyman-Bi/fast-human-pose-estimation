@@ -12,7 +12,7 @@ from scipy.io import loadmat
 import torch
 
 def augment(aug_prob, images_path, data_path,
-            img_dist_path='augmented_images', data_dist_path='aumented_joints.pkl'):
+            img_dist_path='./augmented_images', data_dist_path='./aumented_joints.pkl'):
     if os.path.isfile(data_dist_path) is True:
         return img_dist_path, data_dist_path
     with open(data_path, 'rb') as joints_file:
@@ -55,8 +55,8 @@ def augment(aug_prob, images_path, data_path,
 
 
 def resize_dataset(resize_shape, images_path, data_path,
-                   img_dist_path='rescaled_images',
-                   data_dist_path='rescaled_joints.pkl'):
+                   img_dist_path='./rescaled_images',
+                   data_dist_path='./rescaled_joints.pkl'):
     if os.path.isfile(data_dist_path) is True:
         return img_dist_path, data_dist_path
     os.mkdir(img_dist_path)
@@ -85,16 +85,16 @@ def resize_dataset(resize_shape, images_path, data_path,
 
 def transform_joints(images_folder, joints_path, aug_prob=None, resize_shape=None):
     joints = loadmat(joints_path)['joints'][:2].transpose(2, 0, 1)
-    joints_path = 'joints.pkl'
+    joints_path = './joints.pkl'
     joints_file = open(joints_path, 'wb')
     pickle.dump(joints, joints_file)
     joints_file.close()
     if aug_prob:
-        joints_dist = 'augmented_joints.pkl'
+        joints_dist = './augmented_joints.pkl'
         images_folder, joints_path = augment(aug_prob, images_folder, joints_path, images_folder, joints_dist)
     if resize_shape:
-        joints_dist = 'rescaled_joints.pkl'
-        images_dist = 'rescaled_images'
+        joints_dist = './rescaled_joints.pkl'
+        images_dist = './rescaled_images'
         images_folder, joints_path = resize_dataset(resize_shape, images_folder, joints_path, images_dist, joints_dist)
     return images_folder, joints_path
 

@@ -1,6 +1,6 @@
 import numpy as np
-from utils import generate_maps
-from metrics import correct_percentage, print_function
+from .utils import generate_maps
+from .metrics import correct_percentage, print_function
 import time
 import torch
 

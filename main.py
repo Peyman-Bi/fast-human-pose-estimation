@@ -1,14 +1,13 @@
-from models import Complete_Model, GaussianFilterLayer
-from utils import Heatmaps_to_Joints, count_parameters, draw_pose
-from train_test import train
-from dataset import augment, transform_joints, resize_dataset, get_data_loaders
+from estimator.models import Complete_Model, GaussianFilterLayer
+from estimator.utils import Heatmaps_to_Joints, count_parameters, draw_pose
+from estimator.train_test import train
+from estimator.dataset import augment, transform_joints, resize_dataset, get_data_loaders
 import argparse
 from torchvision import transforms
 import torch
 import torch.nn as nn
 from torch.optim.lr_scheduler import StepLR
 import matplotlib.pyplot as plt
-
 
 if __name__ == '__main__':
     joint_name = ['Ankle:   ',
@@ -40,8 +39,8 @@ if __name__ == '__main__':
     help='resize shape (default: 256)')
     parser.add_argument('--aug_prob', type=float, default=0.2,
     help='augmentation probability (default: 0.2)')
-    parser.add_argument('--device', type=bool, default=False,
-    help='device (default: False)')
+    parser.add_argument('--device', type=bool, default=True,
+    help='device (default: True)')
     parser.add_argument('--train_percentage', type=float, default=0.7,
     help='train percentage (default: 0.7)')
     parser.add_argument('--valid_percentage', type=float, default=0.1,
@@ -83,7 +82,6 @@ if __name__ == '__main__':
                                                               seed=56238, transform=custom_trans, **params)
 
 
-    # model = Complete_Model(64, batch_size, 14).to(device)
     model = Complete_Model(args.num_network_channels, args.train_batch_size, args.num_stacks, args.num_joints).to(device)
     g_model = GaussianFilterLayer(args.num_joints, args.gussian_filter_size, args.gussian_sigma, args.num_joints).to(device)
     criterion = nn.MSELoss()
@@ -107,4 +105,3 @@ if __name__ == '__main__':
 
     ######################################################################################
     #images = draw_pose(model, test_loader, 4)
-    

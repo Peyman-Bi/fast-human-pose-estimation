@@ -155,7 +155,6 @@ class Complete_Model(nn.Module):
             image = self.HG_Modules[i](image)
             heatmap = self.Conv_Modules[i](image)
             heatmaps.append(heatmap)
-        print(heatmap)
 
         return torch.cat(heatmaps, dim=1)
 
